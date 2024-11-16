@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completa la Palabra</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            background-image: url('./images/steak4.jpg'); /* Ruta corregida */
+            background-size: cover;
+            background-position: center;
+        
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        h1 {
+            color: #ff4500;
+            font-size: 36px;
+            animation: bounce 1.5s infinite;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        p {
+            font-size: 20px;
+            color: #ffffff;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 3px #000;
+        }
+
+        .word-box {
+            font-size: 32px;
+            background-color: rgba(253, 253, 150, 0.8); /* Fondo semitransparente */
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin: 20px;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+            animation: pop 0.5s ease-out;
+        }
+
+        input[type="text"] {
+            width: 50px;
+            font-size: 28px;
+            text-align: center;
+            margin: 10px 5px;
+            border: 2px solid #6a5acd;
+            border-radius: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        input[type="text"]:focus {
+            transform: scale(1.1);
+            border-color: #ff6347;
+            outline: none;
+        }
+
+        .button {
+            margin-top: 20px;
+            padding: 12px 35px;
+            font-size: 22px;
+            background-color: #32cd32;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #2e8b57;
+            transform: scale(1.1);
+        }
+
+        .feedback {
+            font-size: 24px;
+            margin-top: 15px;
+            font-weight: bold;
+            transition: opacity 0.5s ease;
+            text-shadow: 1px 1px 3px #000;
+        }
+
+        .feedback.correct {
+            color: #00ff00;
+        }
+
+        .feedback.wrong {
+            color: #ff0000;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>¡Completa la Palabra!</h1>
+    <p>Rellena las letras que faltan para formar la palabra correcta. 📝</p>
+
+    <div class="word-box" id="word-box"></div>
+    <div id="input-box"></div>
+    <button class="button" onclick="checkAnswer()">¡Revisar!</button>
+    <div class="feedback" id="feedback"></div>
+
+    <script>
+        // Lista de palabras con letras faltantes
+        const words = [
+            { word: "gato", pattern: "_ a _ o", missing: ["g", "t"] },
+            { word: "perro", pattern: "p _ r r _", missing: ["e", "o"] },
+            { word: "mamá", pattern: "m _ m _", missing: ["a", "á"] }
+        ];
+
+        let currentWord;
+
+        // Selecciona una palabra al azar y muestra los espacios
+        function setupWord() {
+            const randomIndex = Math.floor(Math.random() * words.length);
+            currentWord = words[randomIndex];
+
+            document.getElementById("word-box").textContent = currentWord.pattern;
+
+            // Genera inputs para las letras faltantes
+            const inputBox = document.getElementById("input-box");
+            inputBox.innerHTML = ""; // Limpia inputs previos
+            currentWord.missing.forEach((_, index) => {
+                const input = document.createElement("input");
+                input.type = "text";
+                input.maxLength = 1;
+                input.id = `letter${index}`;
+                input.placeholder = "?";
+                inputBox.appendChild(input);
+            });
+        }
+
+        // Verifica las respuestas del usuario
+        function checkAnswer() {
+            const feedback = document.getElementById("feedback");
+            let isCorrect = true;
+
+            currentWord.missing.forEach((letter, index) => {
+                const userAnswer = document.getElementById(`letter${index}`).value.toLowerCase();
+                if (userAnswer !== letter.toLowerCase()) {
+                    isCorrect = false;
+                }
+            });
+
+            if (isCorrect) {
+                feedback.textContent = `¡Muy bien! La palabra es '${currentWord.word}'. 🎉`;
+                feedback.className = "feedback correct";
+                feedback.style.opacity = "1";
+
+                // Cambiar a una nueva palabra después de 2 segundos
+                setTimeout(() => {
+                    feedback.style.opacity = "0";
+                    setupWord();
+                }, 2000);
+            } else {
+                feedback.textContent = "¡Ups! Intenta de nuevo. 🤔";
+                feedback.className = "feedback wrong";
+                feedback.style.opacity = "1";
+            }
+        }
+
+        // Inicializa el juego
+        setupWord();
+    </script>
+</body>
+</html>
